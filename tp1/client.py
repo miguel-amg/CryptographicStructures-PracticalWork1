@@ -11,9 +11,10 @@ server_port = 2003
 # Enviar mensagem para o servidor
 async def sendMsg(writer, reader, message):
     try:
-        print(f'Enviado: {message!r}')
+        print(f'A enviar: {message!r}')
         writer.write(message.encode())
         await writer.drain()
+        print('Mensagem enviada com sucesso.')
 
         data = await reader.read(100)
         print(f'Recebido: {data.decode()!r}')
@@ -34,6 +35,8 @@ async def main():
         # Cliente a correr
         while True:
             msg_data = input("Enviar mensagem para o servidor: ")
+            if msg_data.lower() == 'exit':
+                break
             await sendMsg(writer, reader, msg_data)
             
     except ConnectionRefusedError:
