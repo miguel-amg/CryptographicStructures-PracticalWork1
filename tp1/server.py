@@ -10,16 +10,25 @@ server_port = 2003
 
 # Lidar com uma mensagen recebida
 async def recMsg(reader, writer):
-    # Ler a mensagem
-    data = await reader.read(100)
-    message = data.decode()
     addr = writer.get_extra_info('peername')
-    print(f"Mensagem recebida {message!r}. De: {addr!r}.")
+    print(f"Conexão estabelecida com {addr!r}.")
+    
+    while True:
+        # Ler a mensagem
+        data = await reader.read(100)
+        if not data:
+            break
+        message = data.decode()
+        print(f"Mensagem recebida {message!r}. De: {addr!r}.")
 
-    # Enviar mensagem igual de volta
-    print(f"Mensagem enviada (automatico): {message!r}")
-    writer.write(data)
-    await writer.drain()
+        # Enviar mensagem igual de volta
+        print(f"Mensagem enviada (automatico): {message!r}")
+        writer.write(data)
+        await writer.drain()
+
+    print(f"Conexão fechada com {addr!r}.")
+    writer.close()
+    await writer.wait_closed()
 
 async def main():
     # Iniciar o servidor
