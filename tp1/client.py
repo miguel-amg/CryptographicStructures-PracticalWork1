@@ -1,8 +1,10 @@
 # Estruturas criptográficas 2024-2025
 # Grupo 02 - Miguel Ângelo Martins Guimarães (pg55986) e Pedro Miguel Oliveira Carvalho (pg55997)
 
+# Este ficheiro contem o codigo da aplicação cliente
+
 # Bibliotecas
-import asyncio, cryptography 
+import asyncio
 
 # Valores hardcoded alteráveis
 server_ip = 'localhost'
@@ -35,8 +37,6 @@ async def main():
         # Cliente a correr
         while True:
             msg_data = input("Enviar mensagem para o servidor: ")
-            if msg_data.lower() == 'exit':
-                break
             await sendMsg(writer, reader, msg_data)
             
     except ConnectionRefusedError:

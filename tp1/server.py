@@ -1,8 +1,10 @@
 # Estruturas criptográficas 2024-2025
 # Grupo 02 - Miguel Ângelo Martins Guimarães (pg55986) e Pedro Miguel Oliveira Carvalho (pg55997)
 
+# Este ficheiro contem o codigo da aplicação servidor
+
 # Bibliotecas
-import asyncio, cryptography 
+import asyncio
 
 # Valores hardcoded alteráveis
 server_ip = 'localhost'
@@ -10,16 +12,26 @@ server_port = 2003
 
 # Lidar com uma mensagen recebida
 async def recMsg(reader, writer):
-    # Ler a mensagem
-    data = await reader.read(100)
-    message = data.decode()
     addr = writer.get_extra_info('peername')
-    print(f"Mensagem recebida {message!r}. De: {addr!r}.")
+    print(f"Conexão estabelecida com {addr!r}")
 
-    # Enviar mensagem igual de volta
-    print(f"Mensagem enviada (automatico): {message!r}")
-    writer.write(data)
-    await writer.drain()
+    while True:
+        data = await reader.read(100) # Esperar por mensagem
+        
+        if not data:
+            break  # Coneccao do cliente desligada
+
+        message = data.decode()
+        print(f"Mensagem recebida {message!r} de {addr!r}.")
+
+        # Enviar a mesma mensagem de volta
+        print(f"Mensagem enviada (automático): {message!r}")
+        writer.write(data)
+        await writer.drain()
+
+    print(f"Conexão fechada com {addr!r}")
+    writer.close()
+    await writer.wait_closed()
 
 async def main():
     # Iniciar o servidor
