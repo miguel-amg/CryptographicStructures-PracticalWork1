@@ -72,16 +72,16 @@ def aead_shake_decrypt(ciphertext, ad, key, tag):
     
     return plaintext.decode()
 
-# Teste
-plaintext = "Mensagem secreta"
-ad = "Dados associados"
-key = "chave_secreta"
+# # Teste
+# plaintext = "Mensagem secreta"
+# ad = "Dados associados"
+# key = "chave_secreta"
 
-# Cifração
-encrypted = aead_shake_encrypt(plaintext, ad, key)
-print("Ciphertext:", encrypted["ciphertext"])
-print("Tag:", encrypted["tag"])
+# # Cifração
+# encrypted = aead_shake_encrypt(plaintext, ad, key)
+# print("Ciphertext:", encrypted["ciphertext"])
+# print("Tag:", encrypted["tag"])
 
-# Decifração
-decrypted = aead_shake_decrypt(encrypted["ciphertext"], ad, key, encrypted["tag"])
-print("Decrypted:", decrypted)
+# # Decifração
+# decrypted = aead_shake_decrypt(encrypted["ciphertext"], ad, key, encrypted["tag"])
+# print("Decrypted:", decrypted)
