@@ -16,8 +16,10 @@ class aead_shake_cypher:
         self.plaintext_bytes = plaintext.encode() # Passar o plaintext para bytes
         self.ad_bytes = ad.encode() # Passar a ad para bytes
         self.key_bytes = key.encode() # Passar a chave para bytes
-        self.iv = os.urandom(16) # Gerar um nounce 
+        self.iv = os.urandom(16) # Gerar um nonce 
 
+    
+    
     # A cifra vai receber a mensagem (plaintext), dados associados (ad), uma chave (key) e o nounce
     def shake(self):
         block_size = len(self.iv) # Tamanho em bytes do bloco
