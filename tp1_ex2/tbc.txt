@@ -1,0 +1,63 @@
+"""
+            Tweakable Primitive Block Cipher
+
+-> tweak é um input adicional -> w
+
+-> w é análogo a uma chave k
+-> a cada execução de uma cifra, o tweak, w, é alterado
+
+-> em aplicações simples, o tweak é processado da mesma forma que a chave
+-> em aplicações mais complexas, este tem um processamento independente
+
+"""
+
+"""
+Parametros de controlo
+
+k -> chave de longa duracao
+w -> chave de curta duracao
+
+Quando usado numa cifra autenticada
+w -> alterado a cada iteração
+k -> mantido constante
+
+"""
+
+"""  
+Nas cifras lightweight:
+        parametro de controlo -> w||k (w ++ k), chamado tweaked key
+        
+        
+Noutras funções:
+        tweaked key -> tkey(w,k), função para otimizar a expansão de k com w
+        
+        
+    Nesta o custo adicional é o de expandir a chave 
+"""
+
+"""
+Numa outra abordagem:
+    o tweak altera o plaintext
+    Assim -> E(w,k,x) = E(k, w XOR E(k,x))
+    Esta tem o custo adicional de usar duas vezes a TPBC
+"""
+
+
+
+""""
+O modo TAE
+
+-> Não usa dados associados
+
+
+1. Os primeiros m bloco de Pi são cifrados por uma key, k, mas por distintos wi
+2. O ultimo bloco, Pm, é cifrado faznedo um XOR com uma máscara gerada cifrando t
+3. Por fim gera-se uma tag de autenticação a partir da paridade do plaintext
+
+
+Construção dos tweaks
+1. Existe um nounce que ocupa os primeiro b/2 bits de cada tweak
+2. Os m terminam em 0, o tweak da autenticação termina em 1
+3. Os tweaks m, no meio, têm um contador, o da autenticação tem um l que é igual ao comprimentos do plaintext
+
+"""
