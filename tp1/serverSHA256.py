@@ -30,6 +30,7 @@ async def recMsg(reader, writer):
 
 async def main():
     server = await asyncio.start_server(recMsg, server_ip, server_port)
+    print("Servidor iniciado.")
     async with server:
         await server.serve_forever()
 

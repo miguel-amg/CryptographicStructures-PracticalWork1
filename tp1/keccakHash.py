@@ -1,4 +1,7 @@
 """Keccak and the FIPS202 functions."""
+#all credit for this code goes to https://github.com/coruus/py-keccak/tree/master/fips202
+#I just copied the code and made some changes to make it work with the project
+
 from __future__ import division, print_function
 
 from base64 import urlsafe_b64encode
