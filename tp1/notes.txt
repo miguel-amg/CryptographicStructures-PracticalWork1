@@ -1,0 +1,14 @@
+Testes:
+    - Ter um terceiro participante na comunicação com uma chave diferente
+    - É possivel o servidor abrir canais com diferentes cifras?
+    - Tamanho maximo do input
+
+
+TO-DO:
+    - Colocar modo "experimental" -> ideia do Miguel
+    - Colocar o gerador random
+
+
+Duvidas:
+    - É possivel fazer o programa sem colocar as keys nos proprios usuários? (e sem ser como input)
+    - Como funciona o desencriptamento?

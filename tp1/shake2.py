@@ -6,7 +6,6 @@ import sys
 import os
 from cryptography.hazmat.primitives import hashes
 
-# Classe que contém o codigo da cifra aead
 class SpongeSHAKE256:
     def __init__(self,rate = 136,capacity = 64):
         self.rate = rate #1088 bits
