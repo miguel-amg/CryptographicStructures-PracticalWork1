@@ -1,15 +1,13 @@
 import numpy as np
 
-# Constantes de rotação (r[x,y])
 RHO_OFFSETS = np.array([
     [0, 36, 3, 41, 18],
     [1, 44, 10, 45, 2],
     [62, 6, 43, 15, 61],
     [28, 55, 25, 21, 56],
     [27, 20, 39, 8, 14]
-])
+], dtype=np.uint64)
 
-# Constantes de rodada RC[i]
 ROUND_CONSTANTS = np.array([
     0x0000000000000001, 0x0000000000008082, 0x800000000000808A,
     0x8000000080008000, 0x000000000000808B, 0x0000000080000001,
@@ -23,14 +21,14 @@ ROUND_CONSTANTS = np.array([
 
 def rot(value, shift):
     """Rotação circular à esquerda para valores de 64 bits."""
-    return ((value << shift) & 0xFFFFFFFFFFFFFFFF) | (value >> (64 - shift))
+    shift = np.uint64(shift)  # Garante que o shift seja tratado corretamente
+    value = np.uint64(value)  # Garante que value seja tratado corretamente
+    return ((value << shift) & np.uint64(0xFFFFFFFFFFFFFFFF)) | (value >> (64 - shift) & np.uint64(0xFFFFFFFFFFFFFFFF))
 
 def keccak_f(state):
     """Aplica a permutação Keccak-f[1600] ao estado fornecido."""
-    # Converte o estado em uma matriz 5x5 de palavras de 64 bits
     A = np.array(state, dtype=np.uint64).reshape(5, 5)
 
-    # Executa 24 rodadas
     for round_idx in range(24):
         # Passo θ
         C = A[:, 0] ^ A[:, 1] ^ A[:, 2] ^ A[:, 3] ^ A[:, 4]
@@ -38,7 +36,7 @@ def keccak_f(state):
         A ^= D[:, None]
 
         # Passos ρ e π
-        B = np.zeros_like(A)
+        B = np.zeros_like(A, dtype=np.uint64)
         for x in range(5):
             for y in range(5):
                 B[y, (2*x + 3*y) % 5] = rot(A[x, y], RHO_OFFSETS[x, y])
