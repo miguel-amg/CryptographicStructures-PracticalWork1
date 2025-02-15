@@ -1,5 +1,6 @@
 import os
 from cryptography.hazmat.primitives import hashes
+from keccakHash import KeccakHash
 
 class SpongeSHAKE256:
     def __init__(self, rate=136, capacity=64):
@@ -18,10 +19,10 @@ class SpongeSHAKE256:
             self._permute()
     
     def _permute(self):
-        # Usa SHAKE-256 para simular a permutação Keccak-f
-        digest = hashes.Hash(hashes.SHAKE256(digest_size=len(self.state)))
-        digest.update(self.state)
-        self.state = bytearray(digest.finalize())
+        # Usa KeccakHash para simular a permutação Keccak-f
+        keccak = KeccakHash(rate=self.rate, dsbyte=0x1f)
+        keccak.absorb(self.state)
+        self.state = bytearray(keccak.squeeze(len(self.state)))
     
     def squeeze(self, output_length):
         output = bytearray()
@@ -72,16 +73,30 @@ def aead_shake_decrypt(ciphertext, ad, key, tag):
     
     return plaintext.decode()
 
-# # Teste
-# plaintext = "Mensagem secreta"
-# ad = "Dados associados"
-# key = "chave_secreta"
+# Teste
+def test_aead_shake():
+    plaintext = "Mensagem secreta"
+    ad = "Dados associados"
+    key = "chave_secreta"
 
-# # Cifração
-# encrypted = aead_shake_encrypt(plaintext, ad, key)
-# print("Ciphertext:", encrypted["ciphertext"])
-# print("Tag:", encrypted["tag"])
+    # Cifração
+    encrypted = aead_shake_encrypt(plaintext, ad, key)
+    print("Ciphertext:", encrypted["ciphertext"])
+    print("Tag:", encrypted["tag"])
 
-# # Decifração
-# decrypted = aead_shake_decrypt(encrypted["ciphertext"], ad, key, encrypted["tag"])
-# print("Decrypted:", decrypted)
+    # Decifração
+    decrypted = aead_shake_decrypt(encrypted["ciphertext"], ad, key, encrypted["tag"])
+    print("Decrypted:", decrypted)
+
+    assert decrypted == plaintext, "Erro: O texto decifrado não corresponde ao texto original"
+
+    # Teste de integridade da tag
+    try:
+        aead_shake_decrypt(encrypted["ciphertext"], ad, key, encrypted["tag"][:-1] + b'\x00')
+    except ValueError as e:
+        print("Tag inválida detectada corretamente:", e)
+    else:
+        print("Erro: Tag inválida não foi detectada")
+
+# if __name__ == "__main__":
+#     test_aead_shake()

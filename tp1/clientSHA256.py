@@ -1,5 +1,5 @@
 import asyncio
-from tp1.experimental.spongeSHAKE256 import aead_shake_encrypt, aead_shake_decrypt
+from spongeSHAKE256 import aead_shake_encrypt, aead_shake_decrypt
 
 server_ip = 'localhost'
 server_port = 2003
