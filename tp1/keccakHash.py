@@ -170,7 +170,7 @@ __all__ = [Shake256]
 
 
 # Teste com uma entrada simples
-shake = Shake256()
-shake.update(b"o rato roeu a roupa do rei de roma")
-output = shake.hexdigest(32)  # Saída de 32 bytes (256 bits)
-print("Output:", output)
+#shake = Shake256()
+#shake.update(b"o rato roeu a roupa do rei de roma")
+#output = shake.hexdigest(32)  # Saída de 32 bytes (256 bits)
+#print("Output:", output)
