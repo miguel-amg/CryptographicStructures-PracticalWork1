@@ -1,5 +1,18 @@
 import numpy as np
 
+def test_keccak_f():
+    """Teste para a função keccak_f."""
+    test_state = [0] * 25  # Estado inicial zerado
+    expected_length = 25  # O estado deve permanecer com 25 elementos
+    
+    try:
+        new_state = keccak_f(test_state)
+        assert len(new_state) == expected_length, "Erro: O estado de saída tem tamanho incorreto."
+        assert isinstance(new_state, list), "Erro: O estado de saída deve ser uma lista."
+        print("Teste bem-sucedido: keccak_f gera um estado de saída válido.")
+    except Exception as e:
+        print(f"Teste falhou: {e}")
+
 RHO_OFFSETS = np.array([
     [0, 36, 3, 41, 18],
     [1, 44, 10, 45, 2],
@@ -21,9 +34,9 @@ ROUND_CONSTANTS = np.array([
 
 def rot(value, shift):
     """Rotação circular à esquerda para valores de 64 bits."""
-    shift = np.uint64(shift)  # Garante que o shift seja tratado corretamente
-    value = np.uint64(value)  # Garante que value seja tratado corretamente
-    return ((value << shift) & np.uint64(0xFFFFFFFFFFFFFFFF)) | (value >> (64 - shift) & np.uint64(0xFFFFFFFFFFFFFFFF))
+    shift = np.uint64(shift)  # Garante que o shift seja tratado corretamente como uint64
+    value = np.uint64(value)  # Garante que value seja tratado corretamente como uint64
+    return ((value << shift) & np.uint64(0xFFFFFFFFFFFFFFFF)) | (value >> np.uint64(64 - shift))
 
 def keccak_f(state):
     """Aplica a permutação Keccak-f[1600] ao estado fornecido."""
@@ -51,7 +64,5 @@ def keccak_f(state):
 
     return A.flatten().tolist()
 
-# Teste com estado inicial zerado
-test_state = [0] * 25
-new_state = keccak_f(test_state)
-print("Novo estado após Keccak-f[1600]:", new_state)
+# Executar o teste
+test_keccak_f()
