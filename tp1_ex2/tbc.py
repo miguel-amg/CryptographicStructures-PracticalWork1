@@ -18,18 +18,11 @@ def remove_padding(padded_data, block_size):
     
     return plaintext
 
-def remove_padding(padded_data, block_size):
-    # Cria um objeto de unpadding com o tamanho do bloco (16 bytes para AES)
-    unpadder = padding.PKCS7(block_size * 8).unpadder()
-    # Remove o padding do texto decifrado
-    plaintext = unpadder.update(padded_data) + unpadder.finalize()
-    return plaintext
 
 def tbc128_encrypt(key,tweak,plaintext):
     
     # 1. Adicionar padding ao plaintext
     block_size = 16
-    padded_plaintext = add_padding(plaintext, block_size)
     
     # 2. Abordagem usada nas cifras "lighweight"
     # A vantagem da tweaked key é que vai estar associada a cada bloco, adicionando um critério de autenticidade
@@ -42,7 +35,7 @@ def tbc128_encrypt(key,tweak,plaintext):
     
     # 4. Cifrar o plaintext
     # O finalize não é extritamente necessário, mas é boa prática
-    ciphertext = encryptor.update(padded_plaintext) 
+    ciphertext = encryptor.update(plaintext) 
     
     print("ciphertext:",ciphertext)
     return ciphertext
@@ -56,17 +49,20 @@ def tbc128_decrypt(key,tweak,ciphertext):
     decryptor = cipher.decryptor()
     
     # Decifra o texto cifrado
-    padded_plaintext = decryptor.update(ciphertext) + decryptor.finalize()
+    plaintext = decryptor.update(ciphertext) + decryptor.finalize()
     
     block_size = 16 
-    plaintext = remove_padding(padded_plaintext, block_size)
     
     print("Plaintext:", plaintext)
     return plaintext
 
 
-plaintext = b"Hello World"
-key = os.urandom(16)
-tweak = os.urandom(16)
-cipher = tbc128_encrypt(key,tweak,plaintext)
-decipher = tbc128_decrypt(key,tweak,cipher)
+#########################
+#### Teste do código ####
+#########################
+
+# plaintext = b"Hello World"
+# key = os.urandom(16)
+# tweak = os.urandom(16)
+# cipher = tbc128_encrypt(key,tweak,plaintext)
+# decipher = tbc128_decrypt(key,tweak,cipher)
