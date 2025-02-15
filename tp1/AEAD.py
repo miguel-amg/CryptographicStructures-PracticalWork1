@@ -21,9 +21,9 @@ class aead:
         self.key = key              # A chave é a capacidade
 
         # Variaveis em bytes
-        self.plaintext_bytes = plaintext.encode() 
         self.ad_bytes = ad.encode() 
-        self.key_bytes = key.encode() # A chave é a Capacidade
+        self.plaintext_bytes = plaintext.encode() 
+        self.key_bytes = key.encode()    # A chave é a Capacidade
         self.iv = os.urandom(NOUNCESIZE) # O iv é o rate deste sponge (Gerar um nonce)
         
         # Valores uteis
@@ -32,13 +32,10 @@ class aead:
 
     # A cifra vai receber a mensagem (plaintext), dados associados (ad), uma chave (key) e o nounce
     def cipher(self):
-        # Preparação
-        # Adicionar padding aos metadados
-        ad_padded = self.__AddPadding(self.ad_bytes, self.blockSize) 
-
         # Execução do sponge
-        self.__absorve(ad_padded, self.blockSize) # Realizar o absorve
-        self.__squeeze() # Realizar o squeeze
+        ad_padded = self.__AddPadding(self.ad_bytes, self.blockSize) 
+        absorve_state = self.__absorve(ad_padded) # Realizar o absorve
+        self.__squeeze(absorve_state) # Realizar o squeeze
 
     # Método privado que adiciona padding a uma sequência de bytes (usando pkcs7) 
     # - Faz com que o tamanho do input seja multiplo do tamanho do bloco
@@ -50,7 +47,8 @@ class aead:
         return padded
 
     # Metodo privado que realiza o absorve do sponge (Devolve o ultimo estado)
-    def __absorve(self, ad_padded: bytes, blockSize: int):
+    def __absorve(self, ad_padded: bytes):
+        # Preparação para o absorve
         ad = ad_padded
         cycles = int(len(ad_padded) / self.blockSize) 
         state = self.iv + self.key_bytes
@@ -77,8 +75,14 @@ class aead:
         return state
 
     # Metodo privado que realiza o squeeze do sponge
-    def __squeeze(self):  
-        print()
+    # Parametros:
+    # absorbed_data: O que vai sendo inserido ao longo do squeeze
+    # extracted_data: O que vai sendo extraido ao longo do squeeze
+    def __squeeze(self, absorbed_data, extracted_data):  
+        # Plaintext a ser utilizado
+        plaintext_copy = plaintext
+
+
 
     # Metodo privado que obtem a tag
     def __buildTag(self):  
