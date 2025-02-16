@@ -1,7 +1,21 @@
 import cryptography
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives import padding, hashes
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 import os
+
+def derive_key(key, tweak):
+    input_key_material = key + tweak
+
+    hkdf = HKDF(
+        algorithm=hashes.SHA256(),
+        length=16,  # change if needed
+        salt=None,
+        info=b'tbc128_encrypt'
+    )
+    tkey = hkdf.derive(input_key_material)
+    
+    return tkey
 
 
 def add_padding(plaintext, block_size):
@@ -26,26 +40,28 @@ def tbc128_encrypt(key,tweak,plaintext):
     
     # 2. Abordagem usada nas cifras "lighweight"
     # A vantagem da tweaked key é que vai estar associada a cada bloco, adicionando um critério de autenticidade
-    tweaked_key = key + tweak
+    #tweaked_key = key + tweak
+    derived_key = derive_key(key, tweak)
     
     # 3. Inicializar a cifra
     # Ainda nao percebi bem se devemos usar o modo ECB ou CBC, mas o CBC é mais seguro
-    cipher = Cipher(algorithms.AES(tweaked_key), modes.ECB())
+    cipher = Cipher(algorithms.AES(derived_key), modes.ECB())
     encryptor = cipher.encryptor()
-    
+
     # 4. Cifrar o plaintext
     # O finalize não é extritamente necessário, mas é boa prática
     ciphertext = encryptor.update(plaintext) 
-    
-    print("ciphertext:",ciphertext)
+
+    #print("ciphertext:",ciphertext)
     return ciphertext
     
     
 def tbc128_decrypt(key,tweak,ciphertext):
     # Processo inverso usado anteriormente para cifrar o texto
-    tweaked_key = key + tweak
+    #tweaked_key = key + tweak
+    derived_key = derive_key(key, tweak)
     
-    cipher = Cipher(algorithms.AES(tweaked_key), modes.ECB())
+    cipher = Cipher(algorithms.AES(derived_key), modes.ECB())
     decryptor = cipher.decryptor()
     
     # Decifra o texto cifrado
@@ -53,7 +69,7 @@ def tbc128_decrypt(key,tweak,ciphertext):
     
     block_size = 16 
     
-    print("Plaintext:", plaintext)
+    #print("Plaintext:", plaintext)
     return plaintext
 
 
