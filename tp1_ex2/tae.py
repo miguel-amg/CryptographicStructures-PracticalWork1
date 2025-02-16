@@ -67,7 +67,7 @@ def tae_encrypt(key,nounce,plaintext,ad):
     parity = 0
     for byte in padded_plaintext:
         parity ^= byte
-    parity = parity.to_bytes(1, 'big')
+    parity = parity.to_bytes(16, 'big')
     print("Parity calculated.")
     print("Parity: ",parity.hex())
         #Gerar o tweak de autenticação
@@ -126,7 +126,7 @@ def tae_decrypt(key, nonce, ciphertext, associated_data, tag):
     parity = 0
     for byte in padded_plaintext:
         parity = parity ^ byte
-    parity = parity.to_bytes(1, 'big')  # Converte a paridade para 1 byte
+    parity = parity.to_bytes(16, 'big') 
 
     # Gera o tweak de autenticação (w*)
     print("Generating the authentication tweak...")
@@ -152,7 +152,7 @@ def tae_decrypt(key, nonce, ciphertext, associated_data, tag):
 key = os.urandom(16)
 
 # Nonce (8 bytes)
-nonce = os.urandom(8)
+nounce = os.urandom(8)
 
 # Texto claro
 plaintext = b"Hello, World! This is a test message."
@@ -161,13 +161,13 @@ plaintext = b"Hello, World! This is a test message."
 associated_data = b"Metadados importantes"
 
 # Cifrar o texto claro
-ciphertext, tag = tae_encrypt(key, nonce, plaintext, associated_data)
+ciphertext, tag = tae_encrypt(key, nounce, plaintext, associated_data)
 print(f"Ciphertext: {ciphertext.hex()}")
 
 
 # Decifrar o texto cifrado
 try:
-    decrypted_plaintext = tae_decrypt(key, nonce, ciphertext, associated_data, tag)
+    decrypted_plaintext = tae_decrypt(key, nounce, ciphertext, associated_data, tag)
     print(f"Decrypted Plaintext: {decrypted_plaintext.decode()}")
 except ValueError as e:
     print(e)
