@@ -154,7 +154,7 @@ key = os.urandom(16)
 # Nonce (8 bytes)
 nounce = os.urandom(8)
 
-# Texto claro
+# Plaintext
 plaintext = b"Hello, World! This is a test message."
 
 # Dados associados (não cifrados, mas autenticados)
@@ -162,8 +162,6 @@ associated_data = b"Metadados importantes"
 
 # Cifrar o texto claro
 ciphertext, tag = tae_encrypt(key, nounce, plaintext, associated_data)
-print(f"Ciphertext: {ciphertext.hex()}")
-
 
 # Decifrar o texto cifrado
 try:
