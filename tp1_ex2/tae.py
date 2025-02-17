@@ -39,11 +39,12 @@ def tae_encrypt(key,nounce,plaintext,ad):
     print("First m-1 blocks encrypted.")
     
     #4. Cifrar o ultimo bloco (pm)
-        #Selecionar o ultimo bloco e calcular o seu tamanho, já que este tem que ser cifrado
+        #Selecionar o ultimo bloco e calcular tau, já que este tem que ser cifrado
     print("------------------------------------")
     print("Encrypting tau and the last block ...")
     last_block = plaintext_blocks[-1]
     tau = len(last_block).to_bytes(block_size, 'big')
+    print("Tau: ",tau.hex())
         #Encriptar tau
     mask = tbc128_encrypt(key, wi[-1], tau)
         #Fazer XOR com o ultimo bloco
@@ -109,6 +110,7 @@ def tae_decrypt(key, nonce, ciphertext, associated_data, tag):
     print("Decrypting tau and the last block...")
     last_block_ciphertext = ciphertext_blocks[-1]
     tau = len(last_block_ciphertext).to_bytes(block_size, 'big')  # τ é o tamanho do último bloco (em bytes)
+    print("Tamanho do último bloco (tau): ", tau.hex())
     mask = tbc128_encrypt(key, wi[-1], tau)  # Gera a máscara cifrando τ
     last_block_plaintext = bytes([last_block_ciphertext[j] ^ mask[j] for j in range(len(last_block_ciphertext))])  # XOR com a máscara
     plaintext_blocks.append(last_block_plaintext)
