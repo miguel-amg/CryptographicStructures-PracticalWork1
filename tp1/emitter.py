@@ -14,7 +14,13 @@ import AEAD
 server_ip = 'localhost'
 server_port = 2003
 
-# Informações para derivação de chaves (Segredos partilhados entre o emmiter e receiver)
+# Modo debug
+view_tags = False # Permite visualizar o valor das tags
+view_cyphertexts = False # Permite visualizar o valor dos ciphertexts
+view_details = True # Informacoes extra sobre o funcionamento 
+
+# Informações para derivação de chaves (Segredos partilhados entre o emmiter e receiver) 
+# (Tem de ser equivalente de ambos os lados)
 SALT = b"salt-fixo-para-utilizar"
 INFO_KEY = b"info-chave"
 GEN_KEY_SIZE = 30
@@ -22,33 +28,55 @@ ASSOCIATED_DATA = "associated-data"
 
 # Pode ser modificado
 INFO_NONCE = b"info-nonce"
-padding_mode = "pkcs" # Modos explicados abaixo
-#########################################################################################
+padding_mode = "pkcs" # Modos explicados abaixo (Tem de ser equivalente de ambos os lados)
 
 # Valores possiveis para o padding_mode:
 #  pkcs - Permite deteção de modificação da mensagem no recetor da mensagem) 
 #  zero - Utiliza zero-padding em que apenas se consegue verificar a tag comparando as tags de cifragem e decifragem     
+#########################################################################################
+
 
 # Enviar mensagem para o servidor
 async def sendMsg(aead_cipher, writer, reader, message, aead_key, aead_nounce):
     try:
         print(f'[CLIENT] A enviar: {message!r}')
         
-        ciphertext, encrypt_tag = aead_cipher.encrypt(message, ASSOCIATED_DATA, aead_key, aead_nounce, "pkcs")
+        # Realizar encrypt da mensagem
+        ciphertext_send, encrypt_tag = aead_cipher.encrypt(message, ASSOCIATED_DATA, aead_key, aead_nounce, padding_mode)
+        
+        # Modo debug
+        if(view_cyphertexts):
+            print(f"[RECEIVER-DEBUG] Ciphertext enviado: {ciphertext_send}")
+        if(view_tags):
+            print(f"[RECEIVER-DEBUG] Tag da mensagem enviada: {encrypt_tag}")
 
-        writer.write(ciphertext) # Enviar a mensagem cifrada para o servidor
+        # Enviar a mensagem cifrada para o servidor
+        writer.write(ciphertext_send)
 
         await writer.drain()
         print('[CLIENT] Mensagem cifrada enviada com sucesso.')
 
         data = await reader.read(100)
-        print(f'[CLIENT] Recebido: {data.decode()!r}')
+        originaltext, decrypt_tag = aead_cipher.decrypt(data, ASSOCIATED_DATA, aead_key, padding_mode)
+        print(f'[CLIENT] Recebido: {originaltext.decode()}')
+
+        # Modo debug
+        if(view_cyphertexts):
+            print(f"[RECEIVER-DEBUG] Ciphertext recebido: {data}")
+        if(view_tags):
+            print(f"[RECEIVER-DEBUG] Tag da mensagem enviada: {decrypt_tag}")
 
     except Exception as e:
         print(f"[CLIENT] Erro ao enviar ou receber mensagem: {e}")
 
 # Função principal
 async def main():
+    print("[CLIENT] Aplicacao cliente iniciada.")
+    
+    # Modo debug
+    if(view_details):
+        print("[RECEIVER-DEBUG] Modo de padding: " + str(padding_mode) + ", tamanho da chave gerada: " + str(GEN_KEY_SIZE) + '.')
+
     # Instanciar AEAD
     aead_cipher = AEAD.aead()
 
@@ -69,7 +97,7 @@ async def main():
 
     try:
         # Iniciar o cliente
-        print("[CLIENT] Aplicacao cliente iniciada.")
+        print("[CLIENT] A conectar ao servidor.")
         reader, writer = await asyncio.open_connection(server_ip, server_port)
         print(f"[CLIENT] Conexão ao servidor (ip:{server_ip}, porta:{server_port}) estabelecida.")
         print("[CLIENT] Escrever 'exit' para sair.")

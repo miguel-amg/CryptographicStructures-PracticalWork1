@@ -15,7 +15,9 @@ server_ip = 'localhost'
 server_port = 2003
 
 # Modo debug
-view_tags = True # Definir como true ou false para visualizar o valor das tags
+view_tags = False # Permite visualizar o valor das tags
+view_cyphertexts = False # Permite visualizar o valor dos ciphertexts
+view_details = True # Informacoes extra sobre o funcionamento 
 
 # Informações para derivação de chaves (Segredos partilhados entre o emmiter e receiver)
 SALT = b"salt-fixo-para-utilizar"
@@ -25,6 +27,11 @@ ASSOCIATED_DATA = "associated-data"
 
 # Pode ser modificado
 INFO_NONCE = b"info-nonce"
+padding_mode = "pkcs" # Modos explicados abaixo (Tem de ser equivalente de ambos os lados)
+
+# Valores possiveis para o padding_mode:
+#  pkcs - Permite deteção de modificação da mensagem no recetor da mensagem) 
+#  zero - Utiliza zero-padding em que apenas se consegue verificar a tag comparando as tags de cifragem e decifragem    
 #########################################################################################
 
 # Lidar com uma mensagen recebida
@@ -53,7 +60,11 @@ async def recMsg(reader, writer):
         if not data:
             break  # Coneccao do cliente desligada
 
-        originaltext_bytes, decrypt_tag = aead_cipher.decrypt(data, ASSOCIATED_DATA, aead_key, "pkcs")
+        # Modo debug
+        if(view_cyphertexts):
+            print(f"[RECEIVER-DEBUG] Ciphertext recebido: {data}")
+
+        originaltext_bytes, decrypt_tag = aead_cipher.decrypt(data, ASSOCIATED_DATA, aead_key, padding_mode)
         originaltext = originaltext_bytes.decode() # Passar o plaintext para texto
         print(f"[RECEIVER] Mensagem decifrada: {originaltext!r} enviada por {addr!r}.")
 
@@ -62,9 +73,16 @@ async def recMsg(reader, writer):
             print(f"[RECEIVER-DEBUG] Tag da mensagem decifrada: {decrypt_tag!r} enviada por {addr!r}.")
 
         # Enviar a mesma mensagem de volta
+        ciphertext_send, encrypt_tag = aead_cipher.encrypt(originaltext, ASSOCIATED_DATA, aead_key, aead_nounce, padding_mode)
         print(f"[RECEIVER] Mensagem espelhada enviada (automático): {originaltext!r}")
         writer.write(data)
         await writer.drain()
+
+        # Modo debug
+        if(view_cyphertexts):
+            print(f"[RECEIVER-DEBUG] Ciphertext enviado: {ciphertext_send}")
+        if(view_tags):
+            print(f"[RECEIVER-DEBUG] Tag da mensagem enviada: {encrypt_tag}")
 
     print(f"[RECEIVER] Conexão fechada com {addr!r}")
     writer.close()
@@ -80,6 +98,12 @@ async def main():
 
     # Iniciar o servidor
     print("[RECEIVER] Aplicacao servidor iniciada.")
+    
+    # Modo debug
+    if(view_details):
+        print("[RECEIVER-DEBUG] Modo de padding: " + str(padding_mode) + ", tamanho da chave gerada: " + str(GEN_KEY_SIZE) + '.')
+
+    # Iniciar o servidor
     server = await asyncio.start_server(recMsg, server_ip, server_port)
 
     addrs = ', '.join(str(sock.getsockname()) for sock in server.sockets)
