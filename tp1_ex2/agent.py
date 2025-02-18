@@ -84,11 +84,14 @@ def agent(role):
             associated_data = b"Dados associados"
 
             plaintext = tae_decrypt(derived_key, nonce, ciphertext, associated_data, tag)
-            print(f"{role}: Mensagem recebida: {plaintext.decode()}")
+            print(f"Mensagem recebida: {plaintext.decode()}")
+            print("Envia uma mensagem: ")
+            
 
     def send_messages():
         while True:
-            message = input(f"{role}: Envia uma mensagem: ")
+            
+            message = input(f"Envia uma mensagem: ")
             nonce = os.urandom(8)
             associated_data = b"Dados associados"
             ciphertext, tag = tae_encrypt(derived_key, nonce, message.encode(), associated_data)
