@@ -114,13 +114,20 @@ class aead:
     def __AddPaddingZero(self, input_data: bytes, blockSize: int) -> bytes:
         remainder = len(input_data) % blockSize
         if remainder == 0:
-            return input_data
-        needed = blockSize - remainder
-        return input_data + (b'\x00' * needed)
+            padding_size = blockSize
+        else:
+            padding_size = blockSize - remainder
+        padding = b'\x01' + (b'\x00' * (padding_size - 1))
+        return input_data + padding
 
     # Metodo privado de remoção de zero padding
     def __RemovePaddingZero(self, input_data: bytes, blockSize: int) -> bytes:
-        return input_data.rstrip(b'\x00')
+        if not input_data:
+            raise ValueError("[Padding] Erro: Dados vazios.")
+        last_padding_index = input_data.rfind(b'\x01') # Procurar pelo bit de inicio de padding apartir do lado direito
+        if last_padding_index == -1 or last_padding_index < len(input_data) - blockSize:
+            raise ValueError("[Padding] Erro: Padding inválido ou corrompido.")
+        return input_data[:last_padding_index] # Extrair todos os bytes até ao bit de inicio do padding
 
     # Metodo privado que realiza o absorve do sponge (Devolve o ultimo estado)
     def __absorve(self, starting_rate, key_bytes, padded_data):
@@ -225,8 +232,8 @@ def debugMode():
     nounce = b'teste'
 
     cifra = aead()
-    ciphertext, encrypt_tag = cifra.encrypt(plaintext, ad, chave_bytes, nounce, "pkcs")
-    originaltext, decrypt_tag = cifra.decrypt(ciphertext, ad, chave_bytes, "pkcs")
+    ciphertext, encrypt_tag = cifra.encrypt(plaintext, ad, chave_bytes, nounce, "zero")
+    originaltext, decrypt_tag = cifra.decrypt(ciphertext, ad, chave_bytes, "zero")
 
     print("Tag de cifragem: " + str(encrypt_tag))
     print("Tag de decifragem: " + str(decrypt_tag))

@@ -100,8 +100,6 @@ async def main():
         print("[CLIENT] A conectar ao servidor.")
         reader, writer = await asyncio.open_connection(server_ip, server_port)
         print(f"[CLIENT] Conexão ao servidor (ip:{server_ip}, porta:{server_port}) estabelecida.")
-        print("[CLIENT] Escrever 'exit' para sair.")
-        print()
 
         # Cliente a correr
         while True:
