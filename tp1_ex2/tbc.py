@@ -35,20 +35,17 @@ def remove_padding(padded_data, block_size):
 
 def tbc128_encrypt(key,tweak,plaintext):
     
-    # 1. Adicionar padding ao plaintext
-    block_size = 16
-    
-    # 2. Abordagem usada nas cifras "lighweight"
+    # 1. Abordagem usada nas cifras "lighweight"
     # A vantagem da tweaked key é que vai estar associada a cada bloco, adicionando um critério de autenticidade
     #tweaked_key = key + tweak
     derived_key = derive_key(key, tweak)
     
-    # 3. Inicializar a cifra
+    # 2. Inicializar a cifra
     # Ainda nao percebi bem se devemos usar o modo ECB ou CBC, mas o CBC é mais seguro
     cipher = Cipher(algorithms.AES(derived_key), modes.ECB())
-    encryptor = cipher.encryptor()
+    encryptor = cipher.encryptor() 
 
-    # 4. Cifrar o plaintext
+    # 3. Cifrar o plaintext
     # O finalize não é extritamente necessário, mas é boa prática
     ciphertext = encryptor.update(plaintext) 
 
@@ -62,12 +59,11 @@ def tbc128_decrypt(key,tweak,ciphertext):
     derived_key = derive_key(key, tweak)
     
     cipher = Cipher(algorithms.AES(derived_key), modes.ECB())
-    decryptor = cipher.decryptor()
+    decryptor = cipher.decryptor() 
     
     # Decifra o texto cifrado
-    plaintext = decryptor.update(ciphertext) + decryptor.finalize()
+    plaintext = decryptor.update(ciphertext) 
     
-    block_size = 16 
     
     #print("Plaintext:", plaintext)
     return plaintext
