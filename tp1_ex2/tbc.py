@@ -68,13 +68,3 @@ def tbc128_decrypt(key,tweak,ciphertext):
     #print("Plaintext:", plaintext)
     return plaintext
 
-
-#########################
-#### Teste do código ####
-#########################
-
-# plaintext = b"Hello World"
-# key = os.urandom(16)
-# tweak = os.urandom(16)
-# cipher = tbc128_encrypt(key,tweak,plaintext)
-# decipher = tbc128_decrypt(key,tweak,cipher)

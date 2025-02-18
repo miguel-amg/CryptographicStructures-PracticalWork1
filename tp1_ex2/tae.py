@@ -16,7 +16,7 @@ def tae_encrypt(key, nounce, plaintext, ad):
     # 1. Dar pad à mensagem
     padded_plaintext = add_padding(plaintext, block_size)
     
-    # Dividir o plaintext em blocos
+        # Dividir o plaintext em blocos
     plaintext_blocks = [padded_plaintext[i:i+block_size] for i in range(0, len(padded_plaintext), block_size)]
 
     # 2. Gerar os tweaks
@@ -102,25 +102,3 @@ def tae_decrypt(key, nonce, ciphertext, associated_data, tag):
         raise ValueError("Autenticação falhou: tag inválida")
     
     return plaintext
-
-# # Chave AES-128 (16 bytes)
-# key = os.urandom(16)
-
-# # Nonce (8 bytes)
-# nounce = os.urandom(8)
-
-# # Plaintext
-# plaintext = b"Hello, World! This is a test message."
-
-# # Dados associados (não cifrados, mas autenticados)
-# associated_data = b"Metadados importantes"
-
-# # Cifrar o texto claro
-# ciphertext, tag = tae_encrypt(key, nounce, plaintext, associated_data)
-
-# # Decifrar o texto cifrado
-# try:
-#     decrypted_plaintext = tae_decrypt(key, nounce, ciphertext, associated_data, tag)
-#     print(f"Decrypted Plaintext: {decrypted_plaintext.decode()}")
-# except ValueError as e:
-#     print(e)

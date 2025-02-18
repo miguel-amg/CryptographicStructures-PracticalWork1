@@ -84,6 +84,7 @@ def agent(role):
             associated_data = b"Dados associados"
 
             plaintext = tae_decrypt(derived_key, nonce, ciphertext, associated_data, tag)
+            print("\n")
             print(f"Mensagem recebida: {plaintext.decode()}")
             print("Envia uma mensagem: ")
             
