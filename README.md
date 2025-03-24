@@ -1,4 +1,4 @@
-# Cryptographic Structures - Practical Work #2
+# Cryptographic Structures - Practical Work #1
 
 **Authors:** Pedro Carvalho [(Github)](https://github.com/pedroocarvalhoo), Miguel Guimarães [(Github)](https://github.com/miguel-amg).
 
@@ -9,8 +9,6 @@
 ***
 
 ### **Tasks:**
-# Cryptographic Structures - Practical Work #1
-
 **Task #1:** Use the *'cryptography'* package to create a private asynchronous communication between an Emitter agent and a Receiver agent that covers the following aspects:
 1. Client-server communication using the python package *'asyncio'*.
 2. Use the SHAKE-256 hash in XOFHash mode as a AEAD (authenticated) cipher.
