@@ -1,3 +1,14 @@
+# Cryptographic Structures - Practical Work #2
+
+**Authors:** Pedro Carvalho [(Github)](https://github.com/pedroocarvalhoo), Miguel Guimarães [(Github)](https://github.com/miguel-amg).
+
+**University of Minho** - Masters Degree in Software Engineering
+
+**February 2025**
+
+***
+
+### **Tasks:**
 # Cryptographic Structures - Practical Work #1
 
 **Task #1:** Use the *'cryptography'* package to create a private asynchronous communication between an Emitter agent and a Receiver agent that covers the following aspects:
